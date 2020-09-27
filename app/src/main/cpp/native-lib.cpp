@@ -11,12 +11,30 @@
 #define LOGF(...) __android_log_print(ANDROID_LOG_FATAL,LOG_TAG ,__VA_ARGS__) // 定义LOGF类型
 #endif
 
-extern "C" JNIEXPORT jstring JNICALL
+
+jobject gThiz;
+
+
+extern "C" {
+JNIEXPORT jstring JNICALL
 Java_com_wzq_ndk_MainActivity_stringFromJNI(JNIEnv *env, jobject jobject1) {
+
+    gThiz = env->NewGlobalRef(jobject1);
+
     jclass jclass1 = env->GetObjectClass(jobject1);
     jmethodID jmethodId = env->GetMethodID(jclass1, "textJni", "(Ljava/lang/String;)V");
     jstring jstring1 = env->NewStringUTF("this is text String");
     env->CallVoidMethod(jobject1, jmethodId, jstring1);
+
+
+///**
+// * 抛出异常
+// */
+    jclass nullException = env->FindClass("java/lang/NullPointerException");
+    if (nullException != nullptr) {
+        return reinterpret_cast<jstring>(env->ThrowNew(nullException, "Null aaaaaaaaaaaa"));
+    }
+
 
     jfieldID jfieldId = env->GetStaticFieldID(jclass1, "Companion",
                                               "Lcom/wzq/ndk/MainActivity$Companion;");
@@ -27,11 +45,11 @@ Java_com_wzq_ndk_MainActivity_stringFromJNI(JNIEnv *env, jobject jobject1) {
                                             "(Ljava/lang/String;)V");
     jstring jstring2 = env->NewStringUTF("this is staticTextJni");
     env->CallVoidMethod(comjobject, jmethodId1, jstring2);
-    return env->NewStringUTF("测试");
+    env->DeleteGlobalRef(gThiz);
+    return env->NewStringUTF("aaaa");
 }
-extern "C"
 JNIEXPORT void JNICALL
 Java_com_wzq_ndk_MainActivity_fileRead(JNIEnv *env, jobject thiz, jstring path, jstring path1) {
 
-    fileno()
+}
 }
